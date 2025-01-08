@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗺️ OSM Tile-Server-Proxy</title>
+
+    <link rel="stylesheet" href="assets/leaflet/leaflet.css">
+
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #111;
+            color: #AAA;
+            margin-top: 50px;
+            line-height: 1.6;
+        }
+        p{
+            margin-block: 1em;
+        }
+        main{
+            padding: calc(2em + 5vh) 1em;
+            max-width: 50rem;
+            margin-inline: auto;
+        }
+        a{
+            color:rgb(3, 168, 0);
+        }
+        code{
+            font-family: monospace;
+            background-color: #333;
+            padding: .3em;
+            border-radius: .2em;
+            color:#FFF;
+        }
+        code.code-block{
+            display: block;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            padding: .7em;
+            border-radius: .4em;
+        }
+        .tile-types{
+            list-style-type: none;
+            padding: 0;
+            display: grid;
+            gap: 1em;
+            grid-template-columns: repeat(auto-fill, minmax(20em, 1fr));
+        }
+        .tile-types .map{
+            border-radius: .4em;
+            background-color: #333;
+            display: block;
+            aspect-ratio: 1/1;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <main>
+
+        <h1>🗺️ OSM Tile-Server</h1>
+        <p>Welcome to the <a href="https://github.com/martinkraft/osm-caching-proxy" target="_blank">Tile-Server-Proxy</a>. This server enables the privacy-save access to map-tiles for <a href="https://osm.org" target="_blank">OpenStreetMap</a>.
+        <p>To use the tiles, you can request them via the following URL pattern:</p>
+        <code class="code-block">http://your.server/tile-directory/{tile-type}/{z}/{x}/{y}.png</code>
+        <p>Replace <code>{z}</code>, <code>{x}</code>, and <code>{y}</code> with the appropriate zoom level and tile coordinates, as well als <code>{tile-type}</code> with the desired tile type:</p>
+
+        <ul class="tile-types">
+            <li>
+                <h3>osm_de</h3>
+                <div class="map"></div>
+            </li>
+            <li>
+                <h3>osm</h3>
+                <div class="map"></div>
+            </li>
+            <li>
+                <h3>carto</h3>
+                <div class="map"></div>
+            </li>
+            <li>
+                <h3>carto_light</h3>
+                <div class="map"></div>
+            </li>
+            <li>
+                <h3>carto_dark</h3>
+                <div class="map"></div>
+            </li>
+        </ul>
+
+    </main>
+
+    <script src="assets/leaflet/leaflet.js"></script>
+    <script>
+
+        document.querySelectorAll('.tile-types li').forEach((tileType) => {
+            let name = tileType.querySelector('h3').textContent; 
+            let mapElement = tileType.querySelector('.map');
+
+            var map = L.map(mapElement).setView([50.034565, 8.220393], 13);
+            L.tileLayer('./'+name+'/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+        });
+    </script>
+</body>
+</html>
