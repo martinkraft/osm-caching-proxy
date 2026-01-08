@@ -6,11 +6,12 @@
     <title>🗺️ OSM Tile-Server-Proxy</title>
 
     <link rel="stylesheet" href="assets/leaflet/leaflet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
 
     <style>
         body {
             font-family: sans-serif;
-            background-color: #111;
+            background-color: #000;
             color: #AAA;
             margin-top: 50px;
             line-height: 1.6;
@@ -24,14 +25,17 @@
             margin-inline: auto;
         }
         a{
-            color:rgb(3, 168, 0);
+            color:rgb(68, 147, 248);
+        }
+        h1, h2,h3,h4{
+            color: #FFF;;
         }
         code{
             font-family: monospace;
-            background-color: #333;
+            background-color: #0d1117;
             padding: .3em;
             border-radius: .2em;
-            color:#FFF;
+            color:#a5d6ff;
         }
         code.code-block{
             display: block;
@@ -61,8 +65,26 @@
 
         <h1>🗺️ OSM Tile-Server</h1>
         <p>Welcome to the <a href="https://github.com/martinkraft/osm-caching-proxy" target="_blank">Tile-Server-Proxy</a>. This server enables the privacy-save access to map-tiles for <a href="https://osm.org" target="_blank">OpenStreetMap</a>.
+        
+        <p>For frontend applications, we recommend <a href="https://leafletjs.com" target="_blank">Leaflet.js</a> that can be used with as syntax like this:</p>
+
+        <pre></pr><code class="code-block leaflet-code language-javascript">&lt;link rel="stylesheet" href="{base-url}/assets/leaflet/leaflet.css"&gt;
+&lt;script src="{base-url}/assets/leaflet/leaflet.js"&gt;&lt;/script&gt;
+
+&lt;div class="map-container" style="height: 400px;"&gt;&lt;/div&gt;
+
+&lt;script&gt;
+    document.querySelectorAll('.map-container').forEach(($mapElement) => {
+        var map = L.map($mapElement).setView([50.034565, 8.220393], 13);
+        L.tileLayer('{base-url}/{tile-type}/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&amp;copy; &lt;a href="http://www.openstreetmap.org/copyright"&gt;OpenStreetMap&lt;/a&gt;'
+        }).addTo(map);      
+    });   
+&lt;/script&gt; </code></pre>
+        
         <p>To use the tiles, you can request them via the following URL pattern:</p>
-        <code class="code-block">http://your.server/tile-directory/{tile-type}/{z}/{x}/{y}.png</code>
+        <code class="code-block tile-url">{base-url}/{tile-type}/{z}/{x}/{y}.png</code>
         <p>Replace <code>{z}</code>, <code>{x}</code>, and <code>{y}</code> with the appropriate zoom level and tile coordinates, as well als <code>{tile-type}</code> with the desired tile type:</p>
 
         <ul class="tile-types">
@@ -91,18 +113,36 @@
     </main>
 
     <script src="assets/leaflet/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/languages/html.min.js"></script>
     <script>
+        
+        document.querySelectorAll('code').forEach(($code) => {
+            // Replace {base-url} with current location
+            $code.textContent = $code.textContent.replace(/{base-url}/g, window.location.origin);
+        });
 
-        document.querySelectorAll('.tile-types li').forEach((tileType) => {
-            let name = tileType.querySelector('h3').textContent; 
-            let mapElement = tileType.querySelector('.map');
+        hljs.highlightAll();
 
-            var map = L.map(mapElement).setView([50.034565, 8.220393], 13);
+        let tileUrl = document.querySelector('.tile-url').textContent;
+
+        document.querySelectorAll('.tile-types li').forEach(($tileType) => {
+            let name = $tileType.querySelector('h3').textContent; 
+            let $mapElement = $tileType.querySelector('.map');
+
+            var map = L.map($mapElement).setView([50.034565, 8.220393], 13);
             L.tileLayer('./'+name+'/{z}/{x}/{y}.png', {
                 maxZoom: 19,
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
+
+            // Append new <code> Element with local tile URL
+            let $codeElement = document.createElement('code');
+            $codeElement.classList.add('code-block');
+            $codeElement.textContent = tileUrl.replace('{tile-type}', name);
+            $tileType.appendChild($codeElement);
         });
+
     </script>
 </body>
 </html>
